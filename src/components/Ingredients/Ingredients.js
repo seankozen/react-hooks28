@@ -21,8 +21,15 @@ const ingredientReducer = (currentIngredients, action) => {
 
 const Ingredients = () => {
   const [userIngredients, dispatch] = useReducer(ingredientReducer, []);
-  const { isLoading, error, data, sendRequest, reqExtra, reqIdentifier } =
-    useHttp();
+  const {
+    isLoading,
+    error,
+    data,
+    sendRequest,
+    reqExtra,
+    reqIdentifier,
+    clear,
+  } = useHttp();
 
   //Update data after sending request
   useEffect(() => {
@@ -40,40 +47,18 @@ const Ingredients = () => {
     dispatch({ type: "SET", ingredients: filteredIngredients });
   }, []);
 
-  const addIngredientHandler = useCallback((ingredient) => {
-    sendRequest(
-      "https://react-hooks-review-24b11-default-rtdb.asia-southeast1.firebasedatabase.app/ingredients.json",
-      "POST",
-      JSON.stringify(ingredient),
-      ingredient,
-      "ADD_INGREDIENT"
-    );
-    // dispatchHttp({ type: "SEND" });
-    // //setIsLoading(true);
-    // fetch(
-    //   "https://react-hooks-review-24b11-default-rtdb.asia-southeast1.firebasedatabase.app/ingredients.json",
-    //   {
-    //     method: "POST",
-    //     body: JSON.stringify(ingredient),
-    //     headers: { "Content-Type": "application/json" },
-    //   }
-    // )
-    //   .then((response) => {
-    //     dispatchHttp({ type: "RESPONSE" });
-    //     // setIsLoading(false);
-    //     return response.json();
-    //   })
-    //   .then((responseData) => {
-    //     // setUserIngredients((prevIngredients) => [
-    //     //   ...prevIngredients,
-    //     //   { id: responseData.name, ...ingredient },
-    //     // ]);
-    //     dispatch({
-    //       type: "ADD",
-    //       ingredient: { id: responseData.name, ...ingredient },
-    //     });
-    //   });
-  }, [sendRequest]);
+  const addIngredientHandler = useCallback(
+    (ingredient) => {
+      sendRequest(
+        "https://react-hooks-review-24b11-default-rtdb.asia-southeast1.firebasedatabase.app/ingredients.json",
+        "POST",
+        JSON.stringify(ingredient),
+        ingredient,
+        "ADD_INGREDIENT"
+      );
+    },
+    [sendRequest]
+  );
 
   const removeIngredientHandler = useCallback(
     (ingredientId) => {
@@ -84,15 +69,9 @@ const Ingredients = () => {
         ingredientId,
         "REMOVE_INGREDIENT"
       );
-      // setIsLoading(true);
     },
     [sendRequest]
   );
-
-  const clearError = useCallback(() => {
-    // dispatchHttp({ type: "CLEAR" });
-    // setError(null);
-  }, []);
 
   //Will only rerender when needed (useMemo).  May be beneficial to not use useMemo as check makes rendering inefficient.
   const ingredientList = useMemo(() => {
@@ -106,8 +85,8 @@ const Ingredients = () => {
 
   return (
     <div className="App">
-      {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>}
-      {/* {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>} */}
+      {error && <ErrorModal onClose={clear}>{error}</ErrorModal>}
+
       <IngredientForm
         onAddIngredient={addIngredientHandler}
         loading={isLoading}
